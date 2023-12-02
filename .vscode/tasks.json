@@ -1,0 +1,28 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"group": "build",
+			"label": "build adventofcode-2023",
+			"type": "shell",
+			"command": "cargo",
+			"args": [
+				"build"
+			]
+		},
+		{
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "run adventofcode-2023",
+			"type": "shell",
+			"command": "./target/debug/adventofcode-2023.exe",
+			"args": [],
+			"dependsOn": ["build adventofcode-2023"],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			}
+		}
+	]
+}

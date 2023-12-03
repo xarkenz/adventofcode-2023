@@ -5,5 +5,5 @@ pub mod solution;
 pub use solution::*;
 
 fn main() {
-    day02::run();
+    day03::run();
 }

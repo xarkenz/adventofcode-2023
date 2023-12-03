@@ -17,7 +17,7 @@ pub fn run() {
                 let mut number = 0;
                 let mut adjacent_parts: Vec<(usize, usize)> = Vec::new();
                 let mut check_if_adjacent_part = |row: usize, col: usize| {
-                    if schematic[row][col].is_ascii_punctuation() {
+                    if schematic[row][col] != b'.' && schematic[row][col].is_ascii_punctuation() {
                         adjacent_parts.push((row, col));
                     }
                 };

@@ -38,6 +38,6 @@ pub fn expect_line(result: std::io::Result<String>) -> String {
     result.expect("error while reading input file")
 }
 
-pub fn print_elapsed_time(since: Instant) {
-    println!("\x1b[2mTime: {} ms\x1b[22m", since.elapsed().as_millis());
+pub fn print_elapsed_time(label: &str, since: Instant) {
+    println!("\x1b[2m{label}: {} ms\x1b[22m", since.elapsed().as_millis());
 }

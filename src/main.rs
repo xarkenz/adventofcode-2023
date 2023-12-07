@@ -7,6 +7,8 @@ pub mod solution;
 pub use solution::*;
 
 fn main() {
+    let start_time = std::time::Instant::now();
+
     day01::run();
     day02::run();
     day03::run();
@@ -32,4 +34,6 @@ fn main() {
     day23::run();
     day24::run();
     day25::run();
+
+    print_elapsed_time("Finished in", start_time);
 }

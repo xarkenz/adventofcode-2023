@@ -1,12 +1,3 @@
-pub fn get_input(name: &'static str) -> std::io::BufReader<std::fs::File> {
-    std::io::BufReader::new(std::fs::File::open(format!("./src/input/{name}"))
-        .expect("unable to open input file"))
-}
-
-pub fn expect_line(result: std::io::Result<String>) -> String {
-    result.expect("error while reading input file")
-}
-
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub struct Point2D(pub i64, pub i64);
 

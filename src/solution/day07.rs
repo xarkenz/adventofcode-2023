@@ -85,54 +85,49 @@ impl Hand {
 
     fn get_hand_type(&self) -> HandType {
         let mut joker_count: u64 = 0;
-        let mut occurrences: BTreeMap<Card, u64> = BTreeMap::new();
+        let mut card_counts: BTreeMap<Card, u64> = BTreeMap::new();
+
         for card in &self.0 {
+            // Keep track of the jokers separately so they can be added to another card count later
             if card == &Card::Joker {
                 joker_count += 1;
             }
-            else if let Some(previous) = occurrences.get_mut(card) {
+            else if let Some(previous) = card_counts.get_mut(card) {
                 *previous += 1;
             }
             else {
-                occurrences.insert(*card, 1);
+                card_counts.insert(*card, 1);
             }
         }
+
         if joker_count == 5 {
+            // Handle an edge case (all jokers) that would break the code below
             return HandType::FiveOfAKind;
         }
-        let max_of_a_kind = *occurrences.values().max().unwrap();
-        if joker_count > 0 {
-            let joker_target = occurrences.values_mut().find(|count| **count == max_of_a_kind).unwrap();
+        else if joker_count > 0 {
+            // Add the jokers to the card with the most occurrences
+            // This always results in the best hand type
+            let max_of_a_kind = *card_counts.values().max().unwrap();
+            let joker_target = card_counts.values_mut().find(|count| **count == max_of_a_kind).unwrap();
             *joker_target += joker_count;
         }
-        let max_of_a_kind = *occurrences.values().max().unwrap();
-        match occurrences.len() {
-            1 => {
-                HandType::FiveOfAKind
+
+        let max_of_a_kind = *card_counts.values().max().unwrap();
+        match card_counts.len() {
+            1 => HandType::FiveOfAKind,
+            2 => match max_of_a_kind {
+                4 => HandType::FourOfAKind,
+                3 => HandType::FullHouse,
+                other => panic!("{other}")
             },
-            2 => {
-                if max_of_a_kind == 4 {
-                    HandType::FourOfAKind
-                }
-                else {
-                    HandType::FullHouse
-                }
+            3 => match max_of_a_kind {
+                3 => HandType::ThreeOfAKind,
+                2 => HandType::TwoPair,
+                other => panic!("{other}")
             },
-            3 => {
-                if max_of_a_kind == 3 {
-                    HandType::ThreeOfAKind
-                }
-                else {
-                    HandType::TwoPair
-                }
-            },
-            4 => {
-                HandType::OnePair
-            },
-            5 => {
-                HandType::HighCard
-            },
-            len => panic!("{len}")
+            4 => HandType::OnePair,
+            5 => HandType::HighCard,
+            other => panic!("{other}")
         }
     }
 }
@@ -141,6 +136,7 @@ impl PartialOrd for Hand {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         let self_type = self.get_hand_type();
         let other_type = other.get_hand_type();
+        
         match self_type.partial_cmp(&other_type) {
             Some(std::cmp::Ordering::Equal) => self.0.partial_cmp(&other.0),
             ordering => ordering
@@ -169,6 +165,6 @@ pub fn run() {
     let total_winnings_p1: u64 = hands_p1.iter().enumerate().map(|(rank, (_, bid))| (rank + 1) as u64 * bid).sum();
     let total_winnings_p2: u64 = hands_p2.iter().enumerate().map(|(rank, (_, bid))| (rank + 1) as u64 * bid).sum();
 
-    println!("{total_winnings_p1}");
-    println!("{total_winnings_p2}");
+    println!("[07p1] Total winnings (jacks): {total_winnings_p1}");
+    println!("[07p2] Total winnings (jokers): {total_winnings_p2}");
 }

@@ -42,6 +42,6 @@ pub fn run() {
         }
     }
     
-    println!("[01p1] Sum of calibration values: {calibration_sum}");
-    println!("[01p2] Real sum of calibration values: {real_calibration_sum}");
+    println!("[01p1] Sum of calibration values (digits only): {calibration_sum}");
+    println!("[01p2] Sum of calibration values (digits and words): {real_calibration_sum}");
 }

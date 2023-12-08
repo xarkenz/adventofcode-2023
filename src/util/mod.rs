@@ -1,3 +1,13 @@
+pub fn gcd(mut a: u64, mut b: u64) -> u64 {
+    while b > 0 {
+        let temp = a % b;
+        a = b;
+        b = temp;
+    }
+    
+    a
+}
+
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub struct Point2D(pub i64, pub i64);
 

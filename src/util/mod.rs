@@ -1,11 +1,15 @@
 pub fn gcd(mut a: u64, mut b: u64) -> u64 {
+    // Euclidean algorithm for GCD (recalled from memory, not to brag or anything)
     while b > 0 {
         let temp = a % b;
         a = b;
         b = temp;
     }
-    
     a
+}
+
+pub fn lcm(a: u64, b: u64) -> u64 {
+    a * b / gcd(a, b)
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]

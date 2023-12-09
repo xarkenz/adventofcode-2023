@@ -22,7 +22,7 @@ pub fn run() {
     let mut lines = get_input("day08.txt").lines().map(expect_line);
 
     let steps_line = lines.next().unwrap();
-    let get_steps = || steps_line.chars().map(Step::from);
+    let get_steps = || steps_line.chars().map(Step::from).cycle();
 
     let mut forks: BTreeMap<String, (String, String)> = BTreeMap::new();
     let mut ghostly_locations: Vec<String> = Vec::new();

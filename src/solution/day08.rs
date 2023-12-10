@@ -55,7 +55,7 @@ pub fn run() {
         corporeal_steps_taken += 1;
     }
 
-    println!("[08p1] Steps taken: {corporeal_steps_taken}");
+    println!("[08p1] Corporeal steps taken: {corporeal_steps_taken}");
 
     // The fact that this works frustrates me to no end. The problem gives *no* guarantee
     // that the L/R steps and the paths will line up perfectly to make each ghost

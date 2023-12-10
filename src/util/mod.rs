@@ -1,3 +1,5 @@
+use std::ops::{Add, AddAssign, Sub, SubAssign};
+
 pub fn gcd(mut a: u64, mut b: u64) -> u64 {
     // Euclidean algorithm for GCD (recalled from memory, not to brag or anything)
     while b > 0 {
@@ -22,6 +24,40 @@ impl Point2D {
 
     pub fn y(&self) -> i64 {
         self.1
+    }
+
+    pub fn manhattan_distance_to(&self, other: Self) -> u64 {
+        self.x().abs_diff(other.x()) + self.y().abs_diff(other.y())
+    }
+}
+
+impl Add<Point2D> for Point2D {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Point2D(self.0 + rhs.0, self.1 + rhs.1)
+    }
+}
+
+impl AddAssign<Point2D> for Point2D {
+    fn add_assign(&mut self, rhs: Point2D) {
+        self.0 += rhs.0;
+        self.1 += rhs.1;
+    }
+}
+
+impl Sub<Point2D> for Point2D {
+    type Output = Self;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        Point2D(self.0 - rhs.0, self.1 - rhs.1)
+    }
+}
+
+impl SubAssign<Point2D> for Point2D {
+    fn sub_assign(&mut self, rhs: Point2D) {
+        self.0 -= rhs.0;
+        self.1 -= rhs.1;
     }
 }
 
@@ -133,11 +169,10 @@ impl Map2D {
 
 impl std::fmt::Display for Map2D {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for _ in 0..self.y_offset {
-            writeln!(f)?;
-        }
         for row in self.rows.iter() {
-            writeln!(f, "{row}")?;
+            let leading = String::from_iter(std::iter::repeat(self.filler_tile as char).take((row.min_x() - self.min_x()) as usize));
+            let trailing = String::from_iter(std::iter::repeat(self.filler_tile as char).take((self.max_x() - row.max_x()) as usize));
+            writeln!(f, "{leading}{row}{trailing}")?;
         }
         Ok(())
     }
@@ -155,6 +190,14 @@ impl Map2DRow {
             tiles: Vec::new(),
             x_offset: 0,
         }
+    }
+
+    fn min_x(&self) -> i64 {
+        self.x_offset
+    }
+
+    fn max_x(&self) -> i64 {
+        self.x_offset + self.tiles.len() as i64 - 1
     }
 
     fn get(&self, x: i64, filler_tile: u8) -> u8 {
@@ -195,7 +238,7 @@ impl From<Vec<u8>> for Map2DRow {
 
 impl std::fmt::Display for Map2DRow {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{: >2$}{}", "", String::from_utf8_lossy(&self.tiles), self.x_offset as usize)
+        write!(f, "{}", String::from_utf8_lossy(&self.tiles))
     }
 }
 

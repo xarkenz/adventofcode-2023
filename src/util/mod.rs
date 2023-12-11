@@ -256,6 +256,13 @@ impl Interval {
         }
     }
 
+    pub fn new_normalize(start: i64, end: i64) -> Self {
+        Self {
+            start: start.min(end),
+            end: start.max(end),
+        }
+    }
+
     pub fn start(&self) -> i64 {
         self.start
     }

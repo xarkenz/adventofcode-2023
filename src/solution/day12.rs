@@ -26,7 +26,7 @@ fn get_combinations(row: &[u8], groups: &[usize]) -> u64 {
     }
 }
 
-fn get_combinations_p2<'a>(section: &'a [u8], groups: &'a [usize]) -> BTreeMap<&'a [usize], u64> {
+fn get_combinations_p2_bad<'a>(section: &'a [u8], groups: &'a [usize]) -> BTreeMap<&'a [usize], u64> {
     if let Some((&group, dangling_groups)) = groups.split_first() {
         if group > section.len() {
             let mut totals = BTreeMap::new();
@@ -47,7 +47,7 @@ fn get_combinations_p2<'a>(section: &'a [u8], groups: &'a [usize]) -> BTreeMap<&
                         let next_start = start + group + 1;
                         if !dangling_groups.is_empty() && next_start + dangling_groups[0] <= section.len() {
                             // println!("recursive call: {start} -> {next_start}");
-                            for (dangling, dangling_count) in get_combinations_p2(&section[next_start..], dangling_groups) {
+                            for (dangling, dangling_count) in get_combinations_p2_bad(&section[next_start..], dangling_groups) {
                                 if let Some(count) = totals.get_mut(&dangling) {
                                     *count += dangling_count;
                                 }
@@ -81,6 +81,49 @@ fn get_combinations_p2<'a>(section: &'a [u8], groups: &'a [usize]) -> BTreeMap<&
     }
 }
 
+fn check_groups<'a>(row: &[u8], groups: &'a [usize]) -> Option<&'a [usize]> {
+    let mut group_count = 0;
+    for row_group in row.split(|&spring| spring == b'.') {
+        if !row_group.is_empty() {
+            if group_count < groups.len() && row_group.len() == groups[group_count] {
+                group_count += 1;
+            }
+            else {
+                return None;
+            }
+        }
+    }
+    if group_count == groups.len() {
+        Some(&groups[0..0])
+    }
+    else {
+        Some(&groups[group_count..])
+    }
+}
+
+fn get_combinations_p2(row: &[u8], groups: &[usize], memo: &mut BTreeMap<usize, u64>) -> u64 {
+    if let Some(index) = row.iter().position(|&spring| spring == b'?') {
+        if let Some(memoized_total) = memo.get(&index) {
+            *memoized_total
+        }
+        else {
+            let mut next_row = row.to_vec();
+            let mut total = 0;
+            next_row[index] = b'#';
+            total += get_combinations_p2(&next_row, groups, memo);
+            next_row[index] = b'.';
+            total += get_combinations_p2(&next_row, groups, memo);
+            total
+        }
+    }
+    else if let Some(&[]) = check_groups(row, groups) {
+        1
+    }
+    else {
+        0
+    }
+}
+
 pub fn run() {
     let mut combination_sum: u64 = 0;
     let mut combination_sum_p2: u64 = 0;
@@ -96,7 +139,7 @@ pub fn run() {
             row_p2.extend_from_slice(row);
             groups_p2.extend_from_slice(&groups);
         }
-        //println!("{} : {groups_p2:?}", String::from_utf8_lossy(&row_p2));
+        /*//println!("{} : {groups_p2:?}", String::from_utf8_lossy(&row_p2));
         let row_sections = Vec::from_iter(row_p2.split(|&spring| spring == b'.').filter(|section| !section.is_empty()));
         // println!("ROW: {} {groups:?}", String::from_utf8_lossy(row));
         let mut big_totals = BTreeMap::new();
@@ -119,10 +162,11 @@ pub fn run() {
             }
             big_totals = BTreeMap::new();
             std::mem::swap(&mut big_totals, &mut next_big_totals);
-        }
+        }*/
 
         let combinations = get_combinations(row, &groups);
-        let combinations_p2 = big_totals.get(&groups[0..0]).copied().unwrap_or(0);
+        let combinations_p2 = get_combinations_p2(&row_p2, &groups_p2, &mut BTreeMap::new());
+        // let combinations_p2 = big_totals.get(&groups[0..0]).copied().unwrap_or(0);
         println!("{line} => {combinations}, {combinations_p2}");
         combination_sum += combinations;
         combination_sum_p2 += combinations_p2;

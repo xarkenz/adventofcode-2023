@@ -9,14 +9,8 @@ pub fn run() {
     let mut summary = 0;
     let mut summary_smudged = 0;
 
-    'patterns: for pattern in patterns.split("\r\n\r\n") {
+    for pattern in patterns.split("\r\n\r\n") {
         let map = Map2D::from_rows(pattern.lines().map(|line| line.as_bytes().to_vec()), b' ');
-        /*let get_row = |y: i64| {
-            Vec::from_iter((map.min_x() ..= map.max_y()).map(|x| map.get(x, y)))
-        };
-        let get_column = |x: i64| {
-            Vec::from_iter((map.min_y() ..= map.max_y()).map(|y| map.get(x, y)))
-        };*/
         'vertical_line_search: for x in map.min_x() + 1 ..= map.max_x() {
             let (mut x1, mut x2) = (x - 1, x);
             let mut used_smudge = false;
@@ -67,6 +61,6 @@ pub fn run() {
         }
     }
 
-    println!("{summary}");
-    println!("{summary_smudged}");
+    println!("[13p1] Pattern summary: {summary}");
+    println!("[13p2] Pattern summary (with smudges): {summary_smudged}");
 }

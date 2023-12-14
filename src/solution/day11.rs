@@ -62,6 +62,6 @@ pub fn run() {
         }
     }
 
-    println!("[11p1] {distance_sum_p1}");
-    println!("[11p2] {distance_sum_p2}");
+    println!("[11p1] Sum of compressed galaxy distances: {distance_sum_p1}");
+    println!("[11p2] Sum of uncompressed galaxy distances: {distance_sum_p2}");
 }

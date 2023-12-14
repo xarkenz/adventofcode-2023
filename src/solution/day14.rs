@@ -43,7 +43,7 @@ pub fn run() {
         north_beam_load += load;
     }
 
-    println!("[14p1] {north_beam_load}");
+    println!("[14p1] North beam load: {north_beam_load}");
 
     let mut previous_loads = Vec::new();
 
@@ -73,5 +73,5 @@ pub fn run() {
         }
     };
 
-    println!("[14p2] {billionth_load}");
+    println!("[14p2] North beam load (1 billion cycles): {billionth_load}");
 }

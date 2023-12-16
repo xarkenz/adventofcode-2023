@@ -119,6 +119,18 @@ impl Map2D {
         self.y_offset + self.rows.len() as i64 - 1
     }
 
+    pub fn x_values(&self) -> std::ops::RangeInclusive<i64> {
+        self.min_x() ..= self.max_x()
+    }
+
+    pub fn y_values(&self) -> std::ops::RangeInclusive<i64> {
+        self.min_y() ..= self.max_y()
+    }
+
+    pub fn is_within_bounds(&self, point: Point2D) -> bool {
+        self.min_x() <= point.x() && point.x() <= self.max_x() && self.min_y() <= point.y() && point.y() <= self.max_y()
+    }
+
     pub fn get(&self, x: i64, y: i64) -> u8 {
         self.rows.get((y - self.y_offset) as usize)
             .map(|row| row.get(x, self.filler_tile))
@@ -164,6 +176,14 @@ impl Map2D {
     pub fn clear(&mut self) {
         self.rows.clear();
         self.y_offset = 0;
+    }
+
+    pub fn points(&self) -> Map2DPoints {
+        Map2DPoints::new(self)
+    }
+
+    pub fn tiles(&self) -> Map2DTiles<'_> {
+        Map2DTiles::new(self)
     }
 }
 
@@ -239,6 +259,66 @@ impl From<Vec<u8>> for Map2DRow {
 impl std::fmt::Display for Map2DRow {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", String::from_utf8_lossy(&self.tiles))
+    }
+}
+
+pub struct Map2DPoints {
+    min_x: i64,
+    max_x: i64,
+    max_y: i64,
+    x: i64,
+    y: i64,
+}
+
+impl Map2DPoints {
+    fn new(map: &Map2D) -> Self {
+        Self {
+            min_x: map.min_x(),
+            max_x: map.max_x(),
+            max_y: map.max_y(),
+            x: map.min_x(),
+            y: map.min_y(),
+        }
+    }
+}
+
+impl Iterator for Map2DPoints {
+    type Item = Point2D;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.y > self.max_y {
+            None
+        }
+        else {
+            self.x += 1;
+            if self.x > self.max_x {
+                self.x = self.min_x;
+                self.y += 1;
+            }
+            Some(Point2D(self.x, self.y))
+        }
+    }
+}
+
+pub struct Map2DTiles<'a> {
+    map: &'a Map2D,
+    points: Map2DPoints,
+}
+
+impl<'a> Map2DTiles<'a> {
+    fn new(map: &'a Map2D) -> Self {
+        Self {
+            map,
+            points: Map2DPoints::new(map),
+        }
+    }
+}
+
+impl<'a> Iterator for Map2DTiles<'a> {
+    type Item = u8;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.points.next().map(|point| self.map.get_at(point))
     }
 }
 

@@ -42,7 +42,7 @@ pub fn run() {
         }
     }
 
-    println!("[15p1] {hash_sum}");
+    println!("[15p1] Sum of HASH values: {hash_sum}");
 
     let mut focusing_power_sum = 0;
 
@@ -52,5 +52,5 @@ pub fn run() {
         }
     }
 
-    println!("[15p2] {focusing_power_sum}");
+    println!("[15p2] Sum of lens focusing powers: {focusing_power_sum}");
 }

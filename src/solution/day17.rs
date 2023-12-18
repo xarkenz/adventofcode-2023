@@ -19,10 +19,7 @@ impl State {
 
 impl PartialOrd for State {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        match (self.direction.x() + self.direction.y()).partial_cmp(&(other.direction.x() + other.direction.y())) {
-            Some(std::cmp::Ordering::Equal) => self.heat_loss.partial_cmp(&other.heat_loss).map(std::cmp::Ordering::reverse),
-            ordering => ordering
-        }
+        self.heat_loss.partial_cmp(&other.heat_loss).map(std::cmp::Ordering::reverse)
     }
 }
 
@@ -76,12 +73,10 @@ fn get_min_heat_loss(map: &Map2D, min_distance: i64, max_distance: i64) -> u64 {
                     continue;
                 }
 
-                // print!("{:?} : {heat_loss} {point} {direction}", best_solution.as_ref().map(|(_, best)| *best));
                 let index = get_condition_index(next_direction, next_distance);
                 if let Some(prev_condition) = frontier.get_mut(&next_point) {
                     if let Some(prev_heat_loss) = &mut prev_condition[index] {
                         if next_heat_loss >= *prev_heat_loss {
-                            // println!(" <> {next_heat_loss} {next_point} {next_direction}");
                             continue;
                         }
                         *prev_heat_loss = next_heat_loss;
@@ -95,7 +90,6 @@ fn get_min_heat_loss(map: &Map2D, min_distance: i64, max_distance: i64) -> u64 {
                     next_condition[index] = Some(next_heat_loss);
                     frontier.insert(next_point, next_condition);
                 }
-                // println!(" -> {next_heat_loss} {next_point} {next_direction}");
 
                 let mut next_points = points.clone();
                 next_points.push(next_point);
@@ -105,11 +99,6 @@ fn get_min_heat_loss(map: &Map2D, min_distance: i64, max_distance: i64) -> u64 {
     }
 
     let (_path, min_heat_loss) = best_solution.unwrap();
-    // let mut path_map = map.clone();
-    // for point in path {
-    //     path_map.put_at(point, b'.');
-    // }
-    // println!("{path_map}");
 
     min_heat_loss
 }

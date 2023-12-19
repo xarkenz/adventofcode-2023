@@ -428,6 +428,10 @@ impl IntervalSet {
 
         self
     }
+
+    pub fn clear(&mut self) {
+        self.intervals.clear();
+    }
     
     pub fn apply(&mut self, other: &IntervalSet) {
         for &interval in other.intervals() {
@@ -448,6 +452,22 @@ impl IntervalSet {
                 }
             });
             self.intervals.push(merged);
+        }
+    }
+
+    pub fn intersect(&mut self, other: &IntervalSet) {
+        let mut intersection = IntervalSet::new();
+
+        for &interval in other.intervals() {
+            intersection.apply(&self.splice_interval(interval));
+        }
+
+        *self = intersection;
+    }
+
+    pub fn subtract(&mut self, other: &IntervalSet) {
+        for &interval in other.intervals() {
+            self.splice_interval(interval);
         }
     }
 

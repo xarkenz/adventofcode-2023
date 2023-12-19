@@ -1,5 +1,6 @@
 // temporary, so future days don't give warnings
 #![allow(unused_imports)]
+#![allow(dead_code)]
 
 pub mod util;
 pub mod solution;

@@ -205,13 +205,6 @@ impl PartValues {
         }
     }
 
-    fn apply(&mut self, other: &PartValues) {
-        self.x_values.intersect(&other.x_values);
-        self.m_values.intersect(&other.m_values);
-        self.a_values.intersect(&other.a_values);
-        self.s_values.intersect(&other.s_values);
-    }
-
     fn get_combinations(&self) -> i64 {
         self.x_values.cardinality() * self.m_values.cardinality() * self.a_values.cardinality() * self.s_values.cardinality()
     }

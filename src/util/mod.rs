@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign, Sub, SubAssign};
+use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign};
 
 pub fn gcd(mut a: u64, mut b: u64) -> u64 {
     // Euclidean algorithm for GCD (recalled from memory, not to brag or anything)
@@ -58,6 +58,21 @@ impl SubAssign<Point2D> for Point2D {
     fn sub_assign(&mut self, rhs: Point2D) {
         self.0 -= rhs.0;
         self.1 -= rhs.1;
+    }
+}
+
+impl Mul<i64> for Point2D {
+    type Output = Self;
+
+    fn mul(self, rhs: i64) -> Self::Output {
+        Point2D(self.0 * rhs, self.1 * rhs)
+    }
+}
+
+impl MulAssign<i64> for Point2D {
+    fn mul_assign(&mut self, rhs: i64) {
+        self.0 *= rhs;
+        self.1 *= rhs;
     }
 }
 
@@ -355,6 +370,10 @@ impl Interval {
         self.end - self.start
     }
 
+    pub fn normalized(&self) -> Interval {
+        Self::new_normalize(self.start, self.end)
+    }
+
     pub fn contains(&self, value: i64) -> bool {
         self.start() <= value && value < self.end()
     }
@@ -376,6 +395,12 @@ impl Interval {
     }
 }
 
+impl std::fmt::Display for Interval {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "[{}, {})", self.start, self.end)
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct IntervalSet {
     intervals: Vec<Interval>,
@@ -390,6 +415,10 @@ impl IntervalSet {
 
     pub fn intervals(&self) -> &[Interval] {
         &self.intervals
+    }
+
+    pub fn cardinality(&self) -> i64 {
+        self.intervals.iter().map(|interval| interval.size()).sum()
     }
     
     pub fn with_offset(mut self, offset: i64) -> Self {
@@ -437,21 +466,38 @@ impl IntervalSet {
                 else if interval.start() <= splice.start() && splice.end() <= interval.end() {
                     // Interval fully contains splice
                     spliced_intervals.push(splice);
-                    intervals_to_add.push(Interval::new(splice.end(), interval.end()));
-                    *interval = Interval::new(interval.start(), splice.start());
-                    true
+                    if splice.end() != interval.end() {
+                        intervals_to_add.push(Interval::new(splice.end(), interval.end()));
+                    }
+                    if interval.start() != splice.start() {
+                        *interval = Interval::new(interval.start(), splice.start());
+                        true
+                    }
+                    else {
+                        false
+                    }
                 }
                 else if interval.start() < splice.end() && splice.end() <= interval.end() {
                     // Interval starts inside splice and ends outside
                     spliced_intervals.push(Interval::new(interval.start(), splice.end()));
-                    *interval = Interval::new(splice.end(), interval.end());
-                    true
+                    if splice.end() != interval.end() {
+                        *interval = Interval::new(splice.end(), interval.end());
+                        true
+                    }
+                    else {
+                        false
+                    }
                 }
                 else if interval.start() <= splice.start() && splice.start() < interval.end() {
                     // Interval starts outside splice and ends inside
                     spliced_intervals.push(Interval::new(splice.start(), interval.end()));
-                    *interval = Interval::new(interval.start(), splice.start());
-                    true
+                    if interval.start() != splice.start() {
+                        *interval = Interval::new(interval.start(), splice.start());
+                        true
+                    }
+                    else {
+                        false
+                    }
                 }
                 else {
                     // Interval is unaffected by splice
@@ -465,5 +511,21 @@ impl IntervalSet {
         IntervalSet {
             intervals: spliced_intervals,
         }
+    }
+}
+
+impl std::fmt::Display for IntervalSet {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut intervals_iter = self.intervals.iter();
+        if let Some(interval) = intervals_iter.next() {
+            write!(f, "{interval}")?;
+            for interval in intervals_iter {
+                write!(f, " U {interval}")?;
+            }
+        }
+        else {
+            write!(f, "{{}}")?;
+        }
+        Ok(())
     }
 }

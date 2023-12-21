@@ -90,7 +90,7 @@ pub fn run() {
         if button_count <= 1000 {
             low_count += 1;
         }
-        else if button_count >= 20000 && rx_dependencies.values().all(|&(_, cycle)| cycle.is_some()) {
+        else if rx_dependencies.values().all(|&(_, cycle)| cycle.is_some()) {
             break;
         }
 

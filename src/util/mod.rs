@@ -1,17 +1,54 @@
 use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign};
 
 pub fn gcd(mut a: u64, mut b: u64) -> u64 {
-    // Euclidean algorithm for GCD (recalled from memory, not to brag or anything)
     while b > 0 {
-        let temp = a % b;
-        a = b;
-        b = temp;
+        (a, b) = (b, a % b);
     }
+
+    a
+}
+
+pub fn gcd_big(mut a: u128, mut b: u128) -> u128 {
+    while b > 0 {
+        (a, b) = (b, a % b);
+    }
+
     a
 }
 
 pub fn lcm(a: u64, b: u64) -> u64 {
-    a * b / gcd(a, b)
+    a / gcd(a, b) * b
+}
+
+pub fn lcm_big(a: u128, b: u128) -> u128 {
+    a / gcd_big(a, b) * b
+}
+
+pub fn extended_gcd_big(a: i128, b: i128) -> (i128, (i128, i128)) {
+    let (mut old_r, mut r) = (a, b);
+    let (mut old_s, mut s) = (1, 0);
+    let (mut old_t, mut t) = (0, 1);
+
+    while r > 0 {
+        let (quotient, remainder) = (old_r / r, old_r % r);
+        (old_r, r) = (r, remainder);
+        (old_s, s) = (s, old_s - quotient * s);
+        (old_t, t) = (t, old_t - quotient * t);
+    }
+
+    (old_r, (old_s, old_t))
+}
+
+// Credit where credit is due: https://math.stackexchange.com/questions/2218763/how-to-find-lcm-of-two-numbers-when-one-starts-with-an-offset
+pub fn lcm_with_offset_big(a_offset: i128, a: i128, b_offset: i128, b: i128) -> (i128, i128) {
+    let (gcd, (s, _t)) = extended_gcd_big(a, b);
+    let offset_difference = a_offset - b_offset;
+    if offset_difference % gcd != 0 {
+        panic!("{a_offset}+{a}s and {b_offset}+{b}t never align");
+    }
+
+    let lcm = a / gcd * b;
+    (lcm - (offset_difference * s * a / gcd - a_offset) % lcm, lcm)
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]

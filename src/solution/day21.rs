@@ -80,11 +80,11 @@ pub fn run() {
         odd_visited_4 += odd_visited;
         even_visited_4 += even_visited;
     }
-    println!("{full_map_steps} : {odd_visited_1}, {even_visited_1}, {odd_visited_2}, {even_visited_2}, {odd_visited_3}, {even_visited_3}, {odd_visited_4}, {even_visited_4}");
+    // println!("{full_map_steps} : {odd_visited_1}, {even_visited_1}, {odd_visited_2}, {even_visited_2}, {odd_visited_3}, {even_visited_3}, {odd_visited_4}, {even_visited_4}");
 
     let total_plots_visited = (full_map_steps + 1) * (odd_visited_1 - odd_visited_2) + full_map_steps * (even_visited_3 - even_visited_4)
         + (full_map_steps + 1) * (full_map_steps + 1) * odd_visited_2
         + full_map_steps * full_map_steps * even_visited_2
         + (full_map_steps + 1) * full_map_steps * (odd_visited_4 + even_visited_4);
-    println!("{total_plots_visited}");
+    println!("[21p2] {total_plots_visited}");
 }

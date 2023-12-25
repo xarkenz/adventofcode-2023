@@ -586,3 +586,65 @@ impl std::fmt::Display for IntervalSet {
         Ok(())
     }
 }
+
+pub struct EquationSystem(pub Vec<Vec<f64>>);
+
+impl EquationSystem {
+    pub fn new(rows: usize, cols: usize) -> Self {
+        Self(std::iter::repeat_with(|| std::iter::repeat(0.0).take(cols).collect()).take(rows).collect())
+    }
+
+    pub fn row_count(&self) -> usize {
+        self.0.len()
+    }
+
+    pub fn col_count(&self) -> usize {
+        self.0[0].len()
+    }
+
+    pub fn swap_rows(&mut self, row1: usize, row2: usize) {
+        for col in 0..self.col_count() {
+            (self.0[row1][col], self.0[row2][col]) = (self.0[row2][col], self.0[row1][col]);
+        }
+    }
+
+    pub fn mul_row(&mut self, row: usize, value: f64) {
+        for element in &mut self.0[row] {
+            *element *= value;
+        }
+    }
+
+    pub fn div_row(&mut self, row: usize, value: f64) {
+        for element in &mut self.0[row] {
+            *element /= value;
+        }
+    }
+
+    pub fn add_row(&mut self, row: usize, from: usize, mul: f64) {
+        for col in 0..self.col_count() {
+            self.0[row][col] += self.0[from][col] * mul;
+        }
+    }
+
+    pub fn solve_rref(&mut self) {
+        let mut target_row: usize = 0;
+        for col in 0..self.col_count() {
+            if target_row >= self.row_count() {
+                break;
+            }
+            for row in target_row..self.row_count() {
+                if self.0[row][col] != 0.0 {
+                    self.swap_rows(row, target_row);
+                    self.div_row(target_row, self.0[target_row][col]);
+                    for cancel_row in 0..self.row_count() {
+                        if cancel_row != target_row && self.0[cancel_row][col] != 0.0 {
+                            self.add_row(cancel_row, target_row, -self.0[cancel_row][col]);
+                        }
+                    }
+                    target_row += 1;
+                    break;
+                }
+            }
+        }
+    }
+}

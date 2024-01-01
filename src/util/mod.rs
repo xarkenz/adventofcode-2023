@@ -421,12 +421,13 @@ impl Iterator for Map2DPoints {
             None
         }
         else {
+            let point = Point2D(self.x, self.y);
             self.x += 1;
             if self.x > self.max_x {
                 self.x = self.min_x;
                 self.y += 1;
             }
-            Some(Point2D(self.x, self.y))
+            Some(point)
         }
     }
 }

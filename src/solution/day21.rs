@@ -1,9 +1,11 @@
 use super::*;
 
 const STEPS_P2: i64 = 26501365;
+const MAP_SIZE: i64 = 131;
 
 fn get_plots(source_map: &Map2D, start_point: Point2D, steps: i64, fill: bool) -> (i64, i64) {
     let mut map = source_map.clone();
+    map.put_at(start_point, b'0');
     let mut points = vec![start_point];
 
     for step in 1.. {
@@ -35,10 +37,6 @@ fn get_plots(source_map: &Map2D, start_point: Point2D, steps: i64, fill: bool) -
         points = next_points;
     }
 
-    if !fill {
-        // println!("{map}");
-    }
-
     let mut even_plots_visited = 0;
     let mut odd_plots_visited = 0;
 
@@ -64,9 +62,9 @@ pub fn run() {
     map.put_at(center, b'.');
 
     let (plots_visited, _) = get_plots(&map, center, 64, false);
-    println!("[21p1] {plots_visited}");
+    println!("[21p1] Plots visited in 64 steps: {plots_visited}");
 
-    let full_map_steps = STEPS_P2 / 131;
+    let map_repeats = STEPS_P2 / MAP_SIZE; // 202300
 
     let (odd_visited_1, even_visited_1) = get_plots(&map, center, 65, false);
     let (odd_visited_2, even_visited_2) = get_plots(&map, center, 65, true);
@@ -80,11 +78,10 @@ pub fn run() {
         odd_visited_4 += odd_visited;
         even_visited_4 += even_visited;
     }
-    // println!("{full_map_steps} : {odd_visited_1}, {even_visited_1}, {odd_visited_2}, {even_visited_2}, {odd_visited_3}, {even_visited_3}, {odd_visited_4}, {even_visited_4}");
 
-    let total_plots_visited = (full_map_steps + 1) * (odd_visited_1 - odd_visited_2) + full_map_steps * (even_visited_3 - even_visited_4)
-        + (full_map_steps + 1) * (full_map_steps + 1) * odd_visited_2
-        + full_map_steps * full_map_steps * even_visited_2
-        + (full_map_steps + 1) * full_map_steps * (odd_visited_4 + even_visited_4);
-    println!("[21p2] {total_plots_visited}");
+    let total_plots_visited = (map_repeats + 1) * (odd_visited_1 - odd_visited_2) + map_repeats * (even_visited_3 - even_visited_4)
+        + (map_repeats + 1) * (map_repeats + 1) * odd_visited_2
+        + map_repeats * map_repeats * even_visited_2
+        + (map_repeats + 1) * map_repeats * (odd_visited_4 + even_visited_4);
+    println!("[21p2] Plots visited in {STEPS_P2} steps: {total_plots_visited}");
 }

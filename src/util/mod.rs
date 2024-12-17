@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign};
+use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 
 pub fn gcd(mut a: u64, mut b: u64) -> u64 {
     while b > 0 {
@@ -123,6 +123,10 @@ impl std::fmt::Display for Point2D {
 pub struct Point3D(pub i64, pub i64, pub i64);
 
 impl Point3D {
+    pub fn origin() -> Self {
+        Self(0, 0, 0)
+    }
+
     pub fn x(&self) -> i64 {
         self.0
     }
@@ -192,7 +196,102 @@ impl MulAssign<i64> for Point3D {
     }
 }
 
+impl Div<i64> for Point3D {
+    type Output = Self;
+
+    fn div(self, rhs: i64) -> Self::Output {
+        Self(self.0 / rhs, self.1 / rhs, self.2 / rhs)
+    }
+}
+
+impl DivAssign<i64> for Point3D {
+    fn div_assign(&mut self, rhs: i64) {
+        self.0 /= rhs;
+        self.1 /= rhs;
+        self.2 /= rhs;
+    }
+}
+
 impl std::fmt::Display for Point3D {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({}, {}, {})", self.0, self.1, self.2)
+    }
+}
+
+#[derive(Copy, Clone, PartialEq, PartialOrd, Debug)]
+pub struct FPoint3D(pub f64, pub f64, pub f64);
+
+impl FPoint3D {
+    pub fn origin() -> Self {
+        Self(0.0, 0.0, 0.0)
+    }
+
+    pub fn x(&self) -> f64 {
+        self.0
+    }
+
+    pub fn y(&self) -> f64 {
+        self.1
+    }
+
+    pub fn z(&self) -> f64 {
+        self.2
+    }
+
+    pub fn manhattan_distance_to(&self, other: Self) -> f64 {
+        (self.x() - other.x()).abs() + (self.y() - other.y()).abs() + (self.z() - other.z()).abs()
+    }
+}
+
+impl Add<FPoint3D> for FPoint3D {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Self(self.0 + rhs.0, self.1 + rhs.1, self.2 + rhs.2)
+    }
+}
+
+impl AddAssign<FPoint3D> for FPoint3D {
+    fn add_assign(&mut self, rhs: Self) {
+        self.0 += rhs.0;
+        self.1 += rhs.1;
+        self.2 += rhs.2;
+    }
+}
+
+impl Sub<FPoint3D> for FPoint3D {
+    type Output = Self;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        Self(self.0 - rhs.0, self.1 - rhs.1, self.2 - rhs.2)
+    }
+}
+
+impl SubAssign<FPoint3D> for FPoint3D {
+    fn sub_assign(&mut self, rhs: Self) {
+        self.0 -= rhs.0;
+        self.1 -= rhs.1;
+        self.2 -= rhs.2;
+    }
+}
+
+impl Mul<f64> for FPoint3D {
+    type Output = Self;
+
+    fn mul(self, rhs: f64) -> Self::Output {
+        Self(self.0 * rhs, self.1 * rhs, self.2 * rhs)
+    }
+}
+
+impl MulAssign<f64> for FPoint3D {
+    fn mul_assign(&mut self, rhs: f64) {
+        self.0 *= rhs;
+        self.1 *= rhs;
+        self.2 *= rhs;
+    }
+}
+
+impl std::fmt::Display for FPoint3D {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "({}, {}, {})", self.0, self.1, self.2)
     }

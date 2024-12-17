@@ -1,1 +1,6 @@
-/target
+/target/
+
+# The Advent of Code FAQ advises against publishing sample and actual inputs in public repositories.
+# I was not aware of this until after the fact, so commit history will unfortunately reveal the inputs I used.
+# Oh well... I've fixed it now.
+/src/input/
